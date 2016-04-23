@@ -22,15 +22,15 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-tx_rnbase::load('tx_rnbase_cache_Manager');
-tx_rnbase::load('Tx_Rnbase_Service_Base');
+require_once(t3lib_extMgm::extPath('rn_base') . 'class.tx_rnbase.php');
 
+tx_rnbase::load('tx_rnbase_cache_Manager');
 /**
  * Service for accessing age groups
- *
+ * 
  * @author Rene Nitzsche
  */
-class tx_cfcleague_services_Group extends Tx_Rnbase_Service_Base {
+class tx_cfcleague_services_Group extends t3lib_svbase {
 	/**
 	 * Returns a group instance by its uid.
 	 * @param int $uid

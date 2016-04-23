@@ -22,19 +22,20 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+require_once(t3lib_extMgm::extPath('rn_base') . 'class.tx_rnbase.php');
+
 tx_rnbase::load('tx_cfcleague_sports_ISports');
-tx_rnbase::load('Tx_Rnbase_Service_Base');
 
 /**
  */
-class tx_cfcleague_sports_IceHockey extends Tx_Rnbase_Service_Base implements tx_cfcleague_sports_ISports {
+class tx_cfcleague_sports_IceHockey extends t3lib_svbase implements tx_cfcleague_sports_ISports {
 
 	/**
 	 * Get match provider
 	 * @return tx_cfcleaguefe_table_ITableType or null
 	 */
 	public function getLeagueTable() {
-		if(tx_rnbase_util_Extensions::isLoaded('cfc_league_fe')) {
+		if(t3lib_extMgm::isLoaded('cfc_league_fe')) {
 			return tx_rnbase::makeInstance('tx_cfcleaguefe_table_icehockey_Table');
 		}
 		return null;
@@ -53,24 +54,7 @@ class tx_cfcleague_sports_IceHockey extends Tx_Rnbase_Service_Base implements tx
 	}
 	public function isSetBased() {
 		return false;
-	}
-	private $matchInfo = NULL;
-	/* (non-PHPdoc)
-	 * @see tx_cfcleague_sports_ISports::getMatchInfo()
-	 */
-	public function getMatchInfo() {
-		if($this->matchInfo == NULL) {
-			// TODO: Beim Eishockey ist die Overtime variabel
-			$this->matchInfo = tx_rnbase::makeInstance('tx_cfcleague_sports_MatchInfo', array(
-					tx_cfcleague_sports_MatchInfo::MATCH_TIME => 60,
-					tx_cfcleague_sports_MatchInfo::MATCH_PARTS => 3,
-					tx_cfcleague_sports_MatchInfo::MATCH_EXTRA_TIME => 20,
-			));
-		}
-
-		return $this->matchInfo;
 	}
-
 }
 
 

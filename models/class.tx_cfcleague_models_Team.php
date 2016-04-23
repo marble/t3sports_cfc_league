@@ -22,8 +22,9 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
+require_once(t3lib_extMgm::extPath('rn_base') . 'class.tx_rnbase.php');
+
 tx_rnbase::load('tx_rnbase_model_base');
-tx_rnbase::load('tx_rnbase_util_Strings');
 
 /**
  * Model für ein Team.
@@ -51,7 +52,7 @@ class tx_cfcleague_models_Team extends tx_rnbase_model_base {
 	 * @return string
 	 */
 	public function getLogoPath() {
-		if(tx_rnbase_util_Extensions::isLoaded('dam')) {
+		if(t3lib_extMgm::isLoaded('dam')) {
 			if($this->record['logo']) {
 				// LogoFeld
 				$media = tx_rnbase::makeInstance('tx_rnbase_model_media', $this->record['logo']);
@@ -134,7 +135,7 @@ class tx_cfcleague_models_Team extends tx_rnbase_model_base {
 			$options['wrapperclass'] = 'tx_cfcleague_models_Profile';
 
 			$rows = tx_rnbase_util_DB::doSelect($what,$from,$options,0);
-			return $this->sortProfiles($rows, $column);
+			return $this->sortPlayer($rows, $column);
 		}
 		return array();
 	}
@@ -148,7 +149,7 @@ class tx_cfcleague_models_Team extends tx_rnbase_model_base {
 		if(strlen(trim($this->record[$recordKey])) > 0 ) {
 			if(count($profiles)) {
 				// Jetzt die Spieler in die richtige Reihenfolge bringen
-				$uids = tx_rnbase_util_Strings::intExplode(',', $this->record[$recordKey]);
+				$uids = t3lib_div::intExplode(',', $this->record[$recordKey]);
 				$uids = array_flip($uids);
 				foreach($profiles as $player) {
 					$ret[$uids[$player->uid]] = $player;

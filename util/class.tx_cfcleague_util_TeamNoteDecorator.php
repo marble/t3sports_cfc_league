@@ -22,6 +22,8 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+require_once(t3lib_extMgm::extPath('rn_base') . 'class.tx_rnbase.php');
+
 
 /**
  * Diese Klasse ist für die Darstellung von TeamNotes im Backend verantwortlich
@@ -80,18 +82,15 @@ class tx_cfcleague_util_TeamNoteDecorator {
 			$ret = $item->getProfile()->getName();
 			$ret .= $this->formTool->createEditLink('tx_cfcleague_profiles', $item->getProfile()->getUid());
 		}
-
+		
 		return $ret;
 	}
 
 	private function showMediaFAL($item) {
 		tx_rnbase::load('tx_rnbase_util_TSFAL');
 		$fileReference = tx_rnbase_util_TSFAL::getFirstReference('tx_cfcleague_team_notes', $item->getUid(), 'media');
-		if($fileReference) {
-			$thumbs = tx_rnbase_util_TSFAL::createThumbnails(array($fileReference), array('width' => 50, 'height' => 50));
-			return ''.$thumbs[0];
-		}
-		return '';
+		$thumbs = tx_rnbase_util_TSFAL::createThumbnails(array($fileReference), array('width' => 50, 'height' => 50));
+		return ''.$thumbs[0];
 	}
 	private function showMediaDAM($item) {
 		tx_rnbase::load('tx_cfcleague_util_DAM');
@@ -103,6 +102,7 @@ class tx_cfcleague_util_TeamNoteDecorator {
 			$ret = $thumbs[0];
 			list($key, $file) = each($data);
 			$ret .= ' ' . $file['file_name'];
+//					t3lib_utility_Debug::debug($file, 'tx_cfcleague_util_TeamNoteDecorator'); // TODO: remove me
 			$ret .= $this->formTool->createEditLink('tx_dam', $file['uid']);
 		}
 		return $ret;

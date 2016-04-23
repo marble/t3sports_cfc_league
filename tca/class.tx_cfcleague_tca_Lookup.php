@@ -1,9 +1,8 @@
 <?php
-use TYPO3\CMS\Backend\Form\Element\SelectSingleElement;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2007-2015 Rene Nitzsche (rene@system25.de)
+ *  (c) 2007-2014 Rene Nitzsche (rene@system25.de)
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -22,6 +21,8 @@ use TYPO3\CMS\Backend\Form\Element\SelectSingleElement;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
+
+require_once(t3lib_extMgm::extPath('rn_base') . 'class.tx_rnbase.php');
 
 tx_rnbase::load('tx_rnbase_util_Misc');
 tx_rnbase::load('tx_rnbase_util_TYPO3');
@@ -81,8 +82,6 @@ class tx_cfcleague_tca_Lookup {
 
 	public function getPointSystems(&$config) {
 		$sports = $config['row']['sports'];
-		// In der 7.6 ist immer ein Array im Wert
-		$sports = is_array($sports) ? ( count($sports) ? reset($sports) : FALSE ) : $sports;
 		if($sports) {
 			$srv = tx_cfcleague_util_ServiceRegistry::getCompetitionService();
 			$config['items'] = $srv->getPointSystems($sports);
@@ -99,13 +98,12 @@ class tx_cfcleague_tca_Lookup {
 	 * @param array $PA
 	 * @param t3lib_TCEforms $fobj
 	 */
-	public function getStadium4Match($PA, $fobj){
-		$current = intval($PA['row']['arena']);
-		$currentAvailable = false;
-		$teamId = is_array($PA['row']['home']) ? reset($PA['row']['home']) : $PA['row']['home'];
-		if($teamId) {
+  function getStadium4Match($PA, $fobj){
+ 		$current = intval($PA['row']['arena']);
+ 		$currentAvailable = false;
+    if($PA['row']['home']) {
     	$srv = tx_cfcleague_util_ServiceRegistry::getTeamService();
-    	$stadiums = $srv->getStadiums($teamId);
+    	$stadiums = $srv->getStadiums($PA['row']['home']);
     	foreach ($stadiums As $stadium) {
     		$currentAvailable = $currentAvailable ? $currentAvailable : ($current == $stadium->getUid() || $current == 0);
     		$PA['items'][] = array($stadium->getName(), $stadium->getUid());
@@ -125,20 +123,19 @@ class tx_cfcleague_tca_Lookup {
 	 * @param t3lib_TCEforms $fobj
 	 */
 	public function getLogo4Team($PA, $fobj){
-		$clubId = is_array($PA['row']['club']) ? reset($PA['row']['club']) : $PA['row']['club'];
-		if($clubId) {
+		if($PA['row']['club']) {
 			$srv = tx_cfcleague_util_ServiceRegistry::getTeamService();
 			// FIXME: Wenn Teams nicht global verwaltet werden, dann kommt der Verein nicht als UID
 			// tx_cfcleague_club_1|M%C3%BCnchen%2C%20FC%20Bayern%20M%C3%BCnchen
 			// Hier werden bei FAL Referenzen geliefert.
-			// In der 7.6 wird bei Relationen nun wohl immer ein Array geliefert.
-			$items = $srv->getLogos($clubId);
+			$items = $srv->getLogos($PA['row']['club']);
 			// Bei FAL wird die UID der Referenz gespeichert. Damit können die zusätzlichen
 			// Daten der Referenz verwendet werden.
+
 			if(count($items))
 				$PA['items'] = array();
 			foreach ($items As $item) {
-				//$currentAvailable = $currentAvailable ? $currentAvailable : ($current == $item->getUid() || $current == 0);
+				$currentAvailable = $currentAvailable ? $currentAvailable : ($current == $item->getUid() || $current == 0);
 				// Je nach Pflege der Daten sind unterschiedliche Felder gefüllt.
 				$label = ($item->record['title'] ? $item->record['title'] : (
 						$item->record['name'] ? $item->record['name'] : $item->record['file']) );
@@ -166,7 +163,7 @@ class tx_cfcleague_tca_Lookup {
 			}
 		}
 		else {
-			require_once(tx_rnbase_util_Extensions::extPath('dam').'tca_media_field.php');
+			require_once(t3lib_extMgm::extPath('dam').'tca_media_field.php');
 			$ret = txdam_getMediaTCA('image_field', 'logo');
 			unset($ret['config']['MM']);
 			unset($ret['config']['MM_foreign_select']);
@@ -175,16 +172,9 @@ class tx_cfcleague_tca_Lookup {
 		}
 		$ret['label'] = 'Team Logo';
 		// Die Auswahlbox rendern
-		// In der 7.6 einen eigenen Node-Type anmelden
-		// $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry']
-		if(tx_rnbase_util_TYPO3::isTYPO70OrHigher()) {
-			$ret['config']['type'] = 'select'; // 't3s_teamlogo';
-		}
-		else {
-			$ret['config']['userFunc'] = 'EXT:cfc_league/tca/class.tx_cfcleague_tca_Lookup.php:&tx_cfcleague_tca_Lookup->getSingleField_teamLogo';
-			$ret['config']['type'] = tx_rnbase_util_TYPO3::isTYPO60OrHigher() ? 'user' : 'select';
-		}
-		$ret['config']['renderType'] = 'selectSingle';
+		$ret['config']['userFunc'] = 'EXT:cfc_league/tca/class.tx_cfcleague_tca_Lookup.php:&tx_cfcleague_tca_Lookup->getSingleField_teamLogo';
+
+		$ret['config']['type'] = tx_rnbase_util_TYPO3::isTYPO60OrHigher() ? 'user' : 'select';
 		// Die passenden Logos suchen
 		$ret['config']['itemsProcFunc'] = 'tx_cfcleague_tca_Lookup->getLogo4Team';
 		$ret['config']['maxitems'] = '1';
@@ -195,12 +185,11 @@ class tx_cfcleague_tca_Lookup {
 	/**
 	 * Build a select box and an image preview of selected logo
 	 * @param array $PA
-	 * @param TYPO3\CMS\Backend\Form\Element\UserElement $fObj
+	 * @param unknown_type $fObj
 	 */
-	public function getSingleField_teamLogo($PA, $fObj)	{
+	public function getSingleField_teamLogo($PA, &$fObj)	{
 		global $TYPO3_CONF_VARS;
 
-		// In der 7.6 geht das nicht mehr...
 		$tceforms = &$PA['pObj'];
 		$table = $PA['table'];
 		$field = $PA['field'];
@@ -231,8 +220,8 @@ class tx_cfcleague_tca_Lookup {
 			else {
 				// Logo anzeigen
 				$currPic = t3lib_BEfunc::getRecord('tx_dam', $row['logo']);
-				require_once(tx_rnbase_util_Extensions::extPath('dam').'lib/class.tx_dam_tcefunc.php');
-				$tcefunc = tx_rnbase::makeInstance('tx_dam_tcefunc');
+				require_once(t3lib_extMgm::extPath('dam').'lib/class.tx_dam_tcefunc.php');
+				$tcefunc = t3lib_div::makeInstance('tx_dam_tcefunc');
 				if(!method_exists($tcefunc, 'renderFileList')) return $item;
 				$tcefunc->tceforms = &$tceforms;
 				$item .= $tcefunc->renderFileList(array('rows' => array($currPic)));

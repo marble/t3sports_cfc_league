@@ -22,16 +22,16 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
+require_once(t3lib_extMgm::extPath('rn_base') . 'class.tx_rnbase.php');
 tx_rnbase::load('tx_rnbase_util_DB');
-tx_rnbase::load('Tx_Rnbase_Service_Base');
 
 
 /**
  * Service for accessing profile types
- *
+ * 
  * @author Rene Nitzsche
  */
-class tx_cfcleague_services_ProfileTypes extends Tx_Rnbase_Service_Base {
+class tx_cfcleague_services_ProfileTypes extends t3lib_svbase {
 	static $types = array(
 		1 => array('LLL:EXT:cfc_league/locallang_db.xml:tx_cfcleague_profiles_type_player', 1),
 		2 => array('LLL:EXT:cfc_league/locallang_db.xml:tx_cfcleague_profiles_type_coach', 2),

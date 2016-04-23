@@ -22,7 +22,10 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-tx_rnbase::load('Tx_Rnbase_Utility_T3General');
+require_once(t3lib_extMgm::extPath('rn_base') . 'class.tx_rnbase.php');
+
+
+
 
 /**
  * TODO: Suche von Personen im BE. Wird wohl noch nicht verwendet...
@@ -35,13 +38,13 @@ class tx_cfcleague_util_ProfileSearcher {
 	public function __construct(&$mod, $options = array()) {
 		$this->init($mod, $options);
 	}
-
+	
 	private function init($mod, $options) {
 		$this->options = $options;
 		$this->mod = $mod;
 		$this->formTool = $this->mod->formTool;
 		$this->resultSize = 0;
-    $this->data = Tx_Rnbase_Utility_T3General::_GP('searchdata');
+    $this->data = t3lib_div::_GP('searchdata');
 
     if(!isset($options['nopersist']))
 			$this->SEARCH_SETTINGS = t3lib_BEfunc::getModuleData(array ('searchtermProfile' => ''), $this->data, $this->mod->MCONF['name'] );
@@ -91,13 +94,13 @@ class tx_cfcleague_util_ProfileSearcher {
 	 * @return int
 	 */
 	public function getSize() {
-		return $this->resultSize;
+		return $this->resultSize;		
 	}
 
   function searchProfiles($searchterm) {
   	// TODO
   }
-
+	
 
 }
 

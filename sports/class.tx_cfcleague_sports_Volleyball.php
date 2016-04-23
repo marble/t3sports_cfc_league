@@ -2,7 +2,7 @@
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2012-2015 Rene Nitzsche (rene@system25.de)
+ *  (c) 2012-2014 Rene Nitzsche (rene@system25.de)
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -22,19 +22,20 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+require_once(t3lib_extMgm::extPath('rn_base') . 'class.tx_rnbase.php');
+
 tx_rnbase::load('tx_cfcleague_sports_ISports');
-tx_rnbase::load('Tx_Rnbase_Service_Base');
 
 /**
  */
-class tx_cfcleague_sports_Volleyball extends Tx_Rnbase_Service_Base implements tx_cfcleague_sports_ISports {
+class tx_cfcleague_sports_Volleyball extends t3lib_svbase implements tx_cfcleague_sports_ISports {
 
 	/**
 	 * Get match provider
 	 * @return tx_cfcleaguefe_table_ITableType or null
 	 */
 	public function getLeagueTable() {
-		if(tx_rnbase_util_Extensions::isLoaded('cfc_league_fe')) {
+		if(t3lib_extMgm::isLoaded('cfc_league_fe')) {
 			return tx_rnbase::makeInstance('tx_cfcleaguefe_table_volleyball_Table');
 		}
 		return null;
@@ -54,23 +55,11 @@ class tx_cfcleague_sports_Volleyball extends Tx_Rnbase_Service_Base implements t
 	public function isSetBased() {
 		return true;
 	}
-
-	private $matchInfo = NULL;
-	/* (non-PHPdoc)
-	 * @see tx_cfcleague_sports_ISports::getMatchInfo()
-	 */
-	public function getMatchInfo() {
-		if($this->matchInfo == NULL) {
-			// Bei Volleyball gibt es keine festen Zeiten
-			$this->matchInfo = tx_rnbase::makeInstance('tx_cfcleague_sports_MatchInfo', array(
-			));
-		}
-
-		return $this->matchInfo;
-	}
 }
 
 
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/cfc_league/sports/class.tx_cfcleague_sports_Volleyball.php']) {
 	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/cfc_league/sports/class.tx_cfcleague_sports_Volleyball.php']);
 }
+
+?>

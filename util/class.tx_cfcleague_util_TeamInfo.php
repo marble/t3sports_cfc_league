@@ -22,10 +22,6 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-tx_rnbase::load('tx_rnbase_parameters');
-tx_rnbase::load('Tx_Rnbase_Utility_T3General');
-
-
 /**
  * Die Klasse wird im BE verwendet und liefert Informationen über ein Team
  */
@@ -39,7 +35,7 @@ class tx_cfcleague_util_TeamInfo {
 	private function init($team) {
 		global $TCA;
 		$this->team = $team;
-		Tx_Rnbase_Utility_T3General::loadTCA('tx_cfcleague_teams');
+		t3lib_div::loadTCA('tx_cfcleague_teams');
 		$this->baseInfo['maxCoaches'] = intval($TCA['tx_cfcleague_teams']['columns']['coaches']['config']['maxitems']);
 		$this->baseInfo['maxPlayers'] = intval($TCA['tx_cfcleague_teams']['columns']['players']['config']['maxitems']);
 		$this->baseInfo['maxSupporters'] = intval($TCA['tx_cfcleague_teams']['columns']['supporters']['config']['maxitems']);
@@ -56,7 +52,7 @@ class tx_cfcleague_util_TeamInfo {
 		return $this->baseInfo[$item];
 	}
 	/**
-	 *
+	 * 
 	 * @return tx_rnbase_util_FormTool
 	 */
 	public function getFormTool() {
@@ -112,26 +108,24 @@ class tx_cfcleague_util_TeamInfo {
 	 */
 	public function handleRequest() {
 		global $LANG;
-		$data = tx_rnbase_parameters::getPostOrGetParameter('remFromTeam');
+		$data = t3lib_div::_GP('remFromTeam');
 		if(!is_array($data)) return '';
 
 		$fields = array('player' => 'players', 'coach'=>'coaches', 'supporter'=>'supporters');
 		$team = $this->getTeam();
-		$tceData = array();
 		foreach($data As $type => $uid) {
 			$profileUids = $team->record[$fields[$type]];
 			if(!$profileUids) continue;
 
-			if(Tx_Rnbase_Utility_T3General::inList($profileUids, $uid)) {
-				$profileUids = Tx_Rnbase_Utility_T3General::rmFromList($uid, $profileUids);
+			if(t3lib_div::inList($profileUids, $uid)) {
+				$profileUids = t3lib_div::rmFromList($uid, $profileUids);
 				$tceData['tx_cfcleague_teams'][$team->getUid()][$fields[$type]] = $profileUids;
 				$team->record[$fields[$type]] = $profileUids;
 			}
 		}
-
-		$tce =& tx_rnbase_util_DB::getTCEmain($tceData);
+    $tce =& tx_rnbase_util_DB::getTCEmain($tceData);
     $tce->process_datamap();
-
+    
     return $this->getFormTool()->getDoc()->section('Info:', $LANG->getLL('msg_removedProfileFromTeam'), 0, 1, ICON_INFO);
 	}
 	/**

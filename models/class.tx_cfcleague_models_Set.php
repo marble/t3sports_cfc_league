@@ -22,8 +22,9 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
+require_once(t3lib_extMgm::extPath('rn_base') . 'class.tx_rnbase.php');
+
 tx_rnbase::load('tx_rnbase_model_base');
-tx_rnbase::load('tx_rnbase_util_Strings');
 
 /**
  * Model for a match set.
@@ -55,10 +56,10 @@ class tx_cfcleague_models_Set extends tx_rnbase_model_base {
 	public static function buildFromString($sets) {
 		if(!$sets) return false;
 		$sets = preg_split("/[\s]*[;,|][\s]*/", $sets);
-//		$sets = tx_rnbase_util_Strings::trimExplode(';', $sets);
+//		$sets = t3lib_div::trimExplode(';', $sets);
 		$ret = array();
 		foreach($sets As $idx => $setStr) {
-			list($p1, $p2) = tx_rnbase_util_Strings::intExplode(':', $setStr);
+			list($p1, $p2) = t3lib_div::intExplode(':', $setStr);
 			$ret[] = tx_rnbase::makeInstance('tx_cfcleague_models_Set', $idx+1, $p1, $p2);
 		}
 		return $ret;

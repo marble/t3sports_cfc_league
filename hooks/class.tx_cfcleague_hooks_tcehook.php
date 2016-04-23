@@ -22,10 +22,7 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-require_once(tx_rnbase_util_Extensions::extPath('cfc_league') . 'class.tx_cfcleague_db.php');
-tx_rnbase::load('Tx_Rnbase_Utility_Strings');
-tx_rnbase::load('Tx_Rnbase_Utility_T3General');
-
+require_once(t3lib_extMgm::extPath('cfc_league') . 'class.tx_cfcleague_db.php');
 
 class tx_cfcleague_hooks_tcehook {
 
@@ -35,17 +32,17 @@ class tx_cfcleague_hooks_tcehook {
 	 */
 	function getMainFields_preProcess($table, &$row, $tceform) {
 		if($table == 'tx_cfcleague_team_notes') {
-			$teamUid = intval(Tx_Rnbase_Utility_T3General::_GP('team'));
+			$teamUid = intval(t3lib_div::_GP('team'));
 			if($teamUid) $row['team'] = $teamUid;
-			$typeUid = intval(Tx_Rnbase_Utility_T3General::_GP('type'));
+			$typeUid = intval(t3lib_div::_GP('type'));
 			if($typeUid) $row['type'] = $typeUid;
-			$typeUid = intval(Tx_Rnbase_Utility_T3General::_GP('mediatype'));
+			$typeUid = intval(t3lib_div::_GP('mediatype'));
 			if($typeUid) $row['mediatype'] = $typeUid;
 		}
 		if($table == 'tx_cfcleague_games') {
-			$compUid = intval(Tx_Rnbase_Utility_T3General::_GP('competition'));
+			$compUid = intval(t3lib_div::_GP('competition'));
 			if($compUid) $row['competition'] = $compUid;
-			$round = intval(Tx_Rnbase_Utility_T3General::_GP('round'));
+			$round = intval(t3lib_div::_GP('round'));
 			if($round && $compUid) {
 				$row['round'] = $round;
 				// Den Namen aus der DB holen
@@ -130,10 +127,10 @@ class tx_cfcleague_hooks_tcehook {
    */
   function checkProfiles(&$incomingFieldArray, $profileType, &$tcemain) {
     if(strstr($incomingFieldArray[$profileType], 'NEW')) {
-      $newProfileIds = Tx_Rnbase_Utility_Strings::trimExplode(',', $incomingFieldArray[$profileType]);
+      $newProfileIds = t3lib_div::trimExplode(',', $incomingFieldArray[$profileType]);
       $profileUids = array();
       for($i=0; $i < count($newProfileIds); $i++) {
-        if(strstr($newProfileIds[$i], 'NEW'))
+        if(strstr($newProfileIds[$i], 'NEW')) 
           $profileUid = $tcemain->substNEWwithIDs[$newProfileIds[$i]];
         else
           $profileUid = $newProfileIds[$i];

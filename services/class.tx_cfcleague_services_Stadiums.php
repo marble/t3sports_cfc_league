@@ -22,14 +22,15 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-tx_rnbase::load('Tx_Rnbase_Service_Base');
+require_once(t3lib_extMgm::extPath('rn_base') . 'class.tx_rnbase.php');
+
 
 /**
  * Service for accessing stadiums
- *
+ * 
  * @author Rene Nitzsche
  */
-class tx_cfcleague_services_Stadiums extends Tx_Rnbase_Service_Base {
+class tx_cfcleague_services_Stadiums extends t3lib_svbase {
 
 	/**
 	 * Search database for trades

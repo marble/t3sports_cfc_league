@@ -23,6 +23,8 @@
 ***************************************************************/
 
 
+require_once('../class.tx_cfcleague_form_tool.php');
+
 /**
  * Die Klasse bereitet Objekte für die Darstellung im Backend auf
  */
@@ -72,7 +74,7 @@ class tx_cfcleague_mod1_decorator {
 		foreach($matches As $match){
 			$matchRec = is_object($match) ? $match->record : $match;
 			$isNoMatch = is_object($match) ? $match->isDummy() : $matchRec['no_match_home'] || $matchRec['no_match_guest'];
-
+			
 			$row = array();
 			if(isset($options['checkbox'])) {
 				// Check if match is checkable
@@ -84,6 +86,8 @@ class tx_cfcleague_mod1_decorator {
 			if(!$isNoMatch) {
 				reset($columns);
 				foreach($columns As $column => $data) {
+//					if(isset($data['decorator']))
+//						t3lib_utility_Debug::debug($data['decorator']->format('', ''), $column.' - tx_cfcleague_mod1_decorator'); // TODO: remove me
 					// Hier erfolgt die Ausgabe der Daten für die Tabelle. Wenn eine method angegeben
 					// wurde, dann muss das Spiel als Objekt vorliegen. Es wird dann die entsprechende
 					// Methode aufgerufen. Es kann auch ein Decorator-Objekt gesetzt werden. Dann wird
@@ -100,7 +104,7 @@ class tx_cfcleague_mod1_decorator {
 						$row[] = $matchRec[$column];
 					}
 								//isset($data['decorator']) ? $data['decorator']->format($matchRec[$column], $column) : $matchRec[$column];
-//								isset($data['decorator']) ? get_class($data['decorator']) :
+//								isset($data['decorator']) ? get_class($data['decorator']) : 
 				}
 				if(isset($options['linker']))
 					$row[] = self::addLinker($options, $match, $formTool);

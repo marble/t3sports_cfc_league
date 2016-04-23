@@ -22,19 +22,16 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
+require_once(t3lib_extMgm::extPath('rn_base') . 'class.tx_rnbase.php');
 tx_rnbase::load('tx_rnbase_util_DB');
-tx_rnbase::load('tx_rnbase_util_Strings');
-tx_rnbase::load('Tx_Rnbase_Service_Base');
-
-
 
 
 /**
  * Service for accessing profiles
- *
+ * 
  * @author Rene Nitzsche
  */
-class tx_cfcleague_services_Profiles extends Tx_Rnbase_Service_Base {
+class tx_cfcleague_services_Profiles extends t3lib_svbase {
 	private $profiles = array();
 
 	/**
@@ -43,7 +40,7 @@ class tx_cfcleague_services_Profiles extends Tx_Rnbase_Service_Base {
 	 * @return array[tx_cfcleague_models_Profile]
 	 */
 	public function loadProfiles($uids) {
-		$uids = is_array($uids) ? $uids : tx_rnbase_util_Strings::intExplode(',', $uids);
+		$uids = is_array($uids) ? $uids : t3lib_div::intExplode(',', $uids);
 		$ret = array();
 		$toLoad = array();
 		foreach($uids As $key => $uid) {
@@ -54,7 +51,6 @@ class tx_cfcleague_services_Profiles extends Tx_Rnbase_Service_Base {
 		}
 
 		if(!empty($toLoad)) {
-			$fields = array();
 			$fields['PROFILE.UID'][OP_IN_INT] = implode(',', $toLoad);
 			$options = array();
 			$rows = $this->search($fields, $options);
@@ -75,12 +71,11 @@ class tx_cfcleague_services_Profiles extends Tx_Rnbase_Service_Base {
 	public function checkReferences($profile) {
 		$ret = array();
 		// Zuerst die Teams
-		$options = array();
 		$options['what'] = 'uid';
 
 		$fields = array();
 		$fields[SEARCH_FIELD_JOINED][0] = array(
-			'value' => $profile->getUid(),
+			'value' => $profile->getUid(), 
 			'cols' => array('TEAM.PLAYERS', 'TEAM.SUPPORTERS', 'TEAM.COACHES'),
 			'operator' => OP_INSET_INT
 		);
@@ -97,8 +92,8 @@ class tx_cfcleague_services_Profiles extends Tx_Rnbase_Service_Base {
 
 		$fields = array();
 		$fields[SEARCH_FIELD_JOINED][0] = array(
-			'value' => $profile->getUid(),
-			'cols' => array('MATCH.REFEREE', 'MATCH.ASSISTS', 'MATCH.PLAYERS_HOME', 'MATCH.PLAYERS_GUEST',
+			'value' => $profile->getUid(), 
+			'cols' => array('MATCH.REFEREE', 'MATCH.ASSISTS', 'MATCH.PLAYERS_HOME', 'MATCH.PLAYERS_GUEST', 
 											'MATCH.SUBSTITUTES_HOME', 'MATCH.SUBSTITUTES_GUEST', 'MATCH.COACH_HOME', 'MATCH.COACH_GUEST'),
 			'operator' => OP_INSET_INT
 		);
@@ -108,7 +103,7 @@ class tx_cfcleague_services_Profiles extends Tx_Rnbase_Service_Base {
 
 		$fields = array();
 		$fields[SEARCH_FIELD_JOINED][0] = array(
-			'value' => $profile->getUid(),
+			'value' => $profile->getUid(), 
 			'cols' => array('MATCHNOTE.PLAYER_HOME', 'MATCHNOTE.PLAYER_GUEST'),
 			'operator' => OP_EQ_INT
 		);
@@ -131,7 +126,7 @@ class tx_cfcleague_services_Profiles extends Tx_Rnbase_Service_Base {
 	/**
 	 * Returns all available profile types for a TCA select item
 	 *
-	 * @return array
+	 * @return array 
 	 */
 	function getProfileTypes4TCA() {
 		$items = array();
@@ -157,7 +152,7 @@ class tx_cfcleague_services_Profiles extends Tx_Rnbase_Service_Base {
 		foreach($uids As $uid) {
 			$uidArr[$uid] = '';
 		}
-
+		
 		$baseType = 't3sports_profiletype';
 		$services = tx_rnbase_util_Misc::lookupServices($baseType);
 		foreach ($services As $subtype => $info) {

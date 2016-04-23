@@ -22,10 +22,9 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
+require_once(t3lib_extMgm::extPath('rn_base') . 'class.tx_rnbase.php');
 tx_rnbase::load('tx_rnbase_util_Misc');
 tx_rnbase::load('tx_rnbase_util_DB');
-tx_rnbase::load('tx_rnbase_parameters');
-
 
 /**
  * Search matches from competitions
@@ -41,7 +40,7 @@ class tx_cfcleague_mod1_profilesearcher {
 	}
 
 	/**
-	 *
+	 * 
 	 * @param tx_rnbase_mod_IModule $mod
 	 * @param array $options
 	 */
@@ -52,7 +51,7 @@ class tx_cfcleague_mod1_profilesearcher {
 		$this->options['pid'] = $mod->getPid();
 		$this->formTool = $mod->getFormTool();
 		$this->resultSize = 0;
-		$this->data = tx_rnbase_parameters::getPostOrGetParameter('data');
+		$this->data = t3lib_div::_GP('data');
 
 		if(!isset($options['nopersist']))
 			$this->SEARCH_SETTINGS = t3lib_BEfunc::getModuleData(array ('searchterm' => ''), $this->data, $mod->getName() );
@@ -84,7 +83,7 @@ class tx_cfcleague_mod1_profilesearcher {
 
 		$profiles = $this->searchProfiles($searchTerm);
 		$content .= $this->showProfiles($GLOBALS['LANG']->getLL('label_searchresults'), $profiles);
-
+		
 		return $content;
 	}
 	private function searchProfiles($searchterm) {
@@ -111,7 +110,7 @@ class tx_cfcleague_mod1_profilesearcher {
 	 * @return int
 	 */
 	public function getSize() {
-		return $this->resultSize;
+		return $this->resultSize;		
 	}
 
 	private function showProfiles($headline, &$profiles) {
@@ -142,7 +141,7 @@ class tx_cfcleague_mod1_profilesearcher {
 	private function getFormTool() {
 		return $this->formTool;
 	}
-
+  
 }
 
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/cfc_league/mod1/class.tx_cfcleague_mod1_profilesearcher.php'])	{
